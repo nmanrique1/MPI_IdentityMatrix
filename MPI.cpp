@@ -59,7 +59,7 @@ void IdentityMatrix(int N, int pid, int np)
       MPI_Recv(&mat(0,0), size, MPI_DOUBLE, ipid, tag, MPI_COMM_WORLD, &status );
       double tend = MPI_Wtime();
       double total_time = tend - tstart;
-      std::cout << sizeof(mat) << "\t" << total_time << "\t" << "Ancho de banda:"<< sizeof(mat)/total_time/1.0e6 << std::endl;  // desconozco si sizeof() sirve para matrices de eigen, intenté usar mat.innerSize o algun otra funcion especial de eigen para conocer los bytes del objeto pero no logré convencerme, igualmente es un numero constante por lo que no afecta en general la curva, 
+      std::cout << "\t\t\t\t"<<sizeof(mat) << "\t" << total_time << "\t" << "Ancho de banda:"<< sizeof(mat)/total_time/1.0e6 << std::endl;  // desconozco si sizeof() sirve para matrices de eigen, intenté usar mat.innerSize o algun otra funcion especial de eigen para conocer los bytes del objeto pero no logré convencerme, igualmente es un numero constante por lo que no afecta en general la curva, 
       std::cout<<mat<<"\n";            
                           	//printmat(mat,N,Nlocal);
     }
