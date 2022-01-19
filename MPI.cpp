@@ -4,7 +4,7 @@
 #include <eigen3/Eigen/Dense>
 
 void IdentityMatrix(int reps, int pid, int np);
-//void printdata(vector<double>data(N*Nlocal),int N, int Nlocal );
+
 int main(int argc, char **argv)
 {
   /* MPI Variables */
@@ -26,8 +26,13 @@ int main(int argc, char **argv)
 
 void IdentityMatrix(int N, int pid, int np)
 {
+  //En caso de no ser válido el uso de Eigen en MPI (debido a la indicación de usar arreglos unidimensionales), al final del código hay una parte comentada que se encarga de obtener el ejercicio para arreglos unidimensionales
+  
   int Nlocal=N/np;
   Eigen::MatrixXd mat(Nlocal,N);
+ 
+
+
 
 
 
@@ -41,45 +46,99 @@ void IdentityMatrix(int N, int pid, int np)
   MPI_Status status;
   int tag = 0;
   int size=Nlocal*N;
-  if(0==pid){//master
 
-    //printdata(data,N, Nlocal);
+  if(0==pid){//master
+    
+   
 
   
     std::cout<<mat<<"\n";
-                                //printmat(mat,N,Nlocal);
+                                
+
+                               
 
 
 
 
-                          	//printmat(mat,N,Nlocal);
+                                
  
     for(int ipid=1;ipid<np;++ipid){
       double tstart = MPI_Wtime();
       MPI_Recv(&mat(0,0), size, MPI_DOUBLE, ipid, tag, MPI_COMM_WORLD, &status );
       double tend = MPI_Wtime();
       double total_time = tend - tstart;
-      std::cout << "\t\t\t\t"<<sizeof(mat) << "\t" << total_time << "\t" << "Ancho de banda:"<< sizeof(mat)/total_time/1.0e6 << std::endl;  // desconozco si sizeof() sirve para matrices de eigen, intenté usar mat.innerSize o algun otra funcion especial de eigen para conocer los bytes del objeto pero no logré convencerme, igualmente es un numero constante por lo que no afecta en general la curva, 
-      std::cout<<mat<<"\n";            
-                          	//printmat(mat,N,Nlocal);
+      std::cout << "\t\t\t"<< "Ancho de banda:"<< sizeof(mat)/total_time/1.0e6 << std::endl;  // desconozco si sizeof() sirve para matrices de eigen, intenté usar mat.innerSize                                                                                                                                            // o algun otra funcion especial de eigen para conocer los bytes del objeto pero n                                                                                                                                            //o logré convencerme, igualmente es un numero constante por lo que no afecta en g                                                                                                                                            //eneral la curva, 
+      std::cout<<mat<<"\n";
+      
+                         
     }
   }else{
  
       MPI_Send(&mat(0,0), size, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD);
     }
     
-
+ 
     
-}
-/*
-void printdata(vector<double>data(N*Nlocal),int N, int Nlocal){
 
-  for(int i=0;i<Nlocal;i++){
+/*
+int Nlocal=N/np;
+  int size=Nlocal*N;
+  double * data= new double [size]{0};
+  
+for(int ilocal = 0; ilocal < Nlocal; ++ilocal) {
+  for(int jlocal = Nlocal*pid; jlocal < Nlocal*(pid+1); ++jlocal) {
+    data[ilocal*(N+1) + jlocal] = 1.0;
+    break;
+  }
+  
+}
+
+  
+
+
+
+  
+ 
+  MPI_Status status;
+  int tag = 0;
+  
+
+  if(0==pid){//master
+    
+      for(int i=0;i<Nlocal;i++){
      for(int k=0;k<N;k++){
        std::cout<< data[(i*N)+k]<<"\t";
      }
      std::cout<<"\n";
    }
   
-}
+
+  
+ 
+                                                       
+ 
+    for(int ipid=1;ipid<np;++ipid){
+      double tstart = MPI_Wtime();
+      MPI_Recv(&data[0], size, MPI_DOUBLE, ipid, tag, MPI_COMM_WORLD, &status );
+      double tend = MPI_Wtime();
+      double total_time = tend - tstart;
+      std::cout << "\t\t\t"<< "Ancho de banda:"<< size*sizeof(double)/total_time/1.0e6 << std::endl;  
+
+        for(int i=0;i<Nlocal;i++){
+     for(int k=0;k<N;k++){
+       std::cout<< data[(i*N)+k]<<"\t";
+     }
+     std::cout<<"\n";
+   }
+  
+      
+                         
+    }
+  }else{
+ 
+      MPI_Send(&data[0], size, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD);
+    }
+    
 */
+  }
+
